@@ -4,8 +4,6 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QVBoxLayou
 from PyQt5.QtGui import QIntValidator
 from PIL import Image
 
-# os.environ['QT_QPA_PLATFORM'] = 'xcb'
-
 
 class SimpleGUI(QWidget):
     def __init__(self):
@@ -71,15 +69,14 @@ class SimpleGUI(QWidget):
 
         layout.addRow(generate_qr_button)
 
-
-        
         self.setLayout(layout)
 
         self.show()
 
     
     def generate_qr_code(self):
-        print(self.data['quantity'])
+
+        # print(self.data['quantity'])
         qr_data = f"Name: {self.data['name']}\nAge: {self.data['age']}\nGender: {self.data['gender']}\nQuantity: {', '.join(self.data['quantity'])}\nMedicines: {', '.join(self.data['medicines'])}"
 
         qr = qrcode.QRCode(version=1, box_size=10, border=5)
@@ -91,23 +88,26 @@ class SimpleGUI(QWidget):
         img.save("qrcode.png")
         print("QR Code generated and saved as qrcode.png")
 
+
     def add_medicine(self):
 
         selected_medicine = self.medicine_combobox.currentText()
-        self.data['quantity'].append(self.quantity_edit.text())
+        selected_quantity = (self.quantity_edit.text())
+        self.data['quantity'].append(selected_quantity)
         self.data['medicines'].append(selected_medicine)
 
-        print(f"Medicine added: {self.quantity_edit.text()}")
+        print(f"Medicine added: {selected_quantity}")
         print(f"Medicine Quan: {selected_medicine}")
 
 
     def submit_clicked(self):
+
+        print(self.data['quantity'])
         self.data['name'] = self.name_edit.text()
         self.data['age'] = self.age_edit.text()
         self.data['gender'] = self.gender_combobox.currentText()
-        self.data['quantity'] = self.quantity_edit.text()
 
-        print(f"Name: {self.data['name']}, Age: {self.data['age']}, Gender: {self.data['gender']}, Medicines: {self.data['medicines']}")
+        print(f"Name: {self.data['name']}\nAge: {self.data['age']}\nGender: {self.data['gender']}\nQuantity: {(self.data['quantity'])}\nMedicines: {', '.join(self.data['medicines'])}")
 
 
 
