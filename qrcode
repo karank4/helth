@@ -1,0 +1,117 @@
+import sys ,os
+import qrcode
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton, QFormLayout, QComboBox
+from PyQt5.QtGui import QIntValidator
+from PIL import Image
+
+# os.environ['QT_QPA_PLATFORM'] = 'xcb'
+
+
+class SimpleGUI(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.data = {
+            'name': '',
+            'age': '',
+            'gender': '',
+            'quantity':[],
+            'medicines': []
+        }
+
+        self.init_ui()
+
+    def init_ui(self):
+        self.setWindowTitle('Simple GUI')
+        self.setGeometry(300, 300, 400, 300)
+
+        layout = QFormLayout()
+
+        self.name_label = QLabel('Name:')
+        self.name_edit = QLineEdit()
+
+        self.age_label = QLabel('Age:')
+        self.age_edit = QLineEdit()
+        self.age_edit.setValidator(QIntValidator())
+
+        self.gender_label = QLabel('Gender:')
+        self.gender_combobox = QComboBox()
+        self.gender_combobox.addItems(['Male', 'Female', 'Other'])
+
+        self.medicine_label = QLabel('Medicine:')
+        self.medicine_combobox = QComboBox()
+        self.medicine_combobox.addItems(['Medicine 1', 'Medicine 2', 'Medicine 3', 'Medicine 4'])
+
+        self.qu_lable = QLabel('Quantity')
+        self.quantity_edit = QLineEdit()
+        self.quantity_edit.setValidator(QIntValidator())
+        
+
+        layout.addRow(self.name_label, self.name_edit)
+        layout.addRow(self.age_label, self.age_edit)
+        layout.addRow(self.gender_label, self.gender_combobox)
+        layout.addRow(self.medicine_label, self.medicine_combobox)
+        layout.addRow(self.qu_lable,self.quantity_edit)
+
+
+
+        submit_button = QPushButton('Submit')
+        submit_button.clicked.connect(self.submit_clicked)
+
+        generate_qr_button = QPushButton('Generate QR Code')
+        generate_qr_button.clicked.connect(self.generate_qr_code)
+
+        add_medicine_button = QPushButton('Add Medicine')
+        add_medicine_button.clicked.connect(self.add_medicine)
+
+
+        layout.addRow(add_medicine_button)
+        
+        layout.addRow(submit_button)
+
+        layout.addRow(generate_qr_button)
+
+
+        
+        self.setLayout(layout)
+
+        self.show()
+
+    
+    def generate_qr_code(self):
+        print(self.data['quantity'])
+        qr_data = f"Name: {self.data['name']}\nAge: {self.data['age']}\nGender: {self.data['gender']}\nQuantity: {', '.join(self.data['quantity'])}\nMedicines: {', '.join(self.data['medicines'])}"
+
+        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+        qr.add_data(qr_data)
+        qr.make(fit=True)
+
+        img = qr.make_image(fill_color="black", back_color="white")
+
+        img.save("qrcode.png")
+        print("QR Code generated and saved as qrcode.png")
+
+    def add_medicine(self):
+
+        selected_medicine = self.medicine_combobox.currentText()
+        self.data['quantity'].append(self.quantity_edit.text())
+        self.data['medicines'].append(selected_medicine)
+
+        print(f"Medicine added: {self.quantity_edit.text()}")
+        print(f"Medicine Quan: {selected_medicine}")
+
+
+    def submit_clicked(self):
+        self.data['name'] = self.name_edit.text()
+        self.data['age'] = self.age_edit.text()
+        self.data['gender'] = self.gender_combobox.currentText()
+        self.data['quantity'] = self.quantity_edit.text()
+
+        print(f"Name: {self.data['name']}, Age: {self.data['age']}, Gender: {self.data['gender']}, Medicines: {self.data['medicines']}")
+
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    gui = SimpleGUI()
+    sys.exit(app.exec_())
